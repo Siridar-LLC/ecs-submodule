@@ -1264,6 +1264,10 @@ namespace ME.ECS {
         
         public ref Entity AddEntity(string name = null, EntityFlag flags = EntityFlag.None) {
 
+            #if !PRODUCTION && SHOW_FIXED_STRING
+            if (!string.IsNullOrEmpty(name) && name.Length > Unity.Collections.FixedString64Bytes.UTF8MaxLengthInBytes)
+                UnityEngine.Debug.LogWarning($"String ('{name}') length greater than max length {Unity.Collections.FixedString64Bytes.UTF8MaxLengthInBytes} and will be truncated!");
+            #endif
             var nameBytes = name != null ? new Unity.Collections.FixedString64Bytes(name.Substring(0, Unity.Collections.FixedString64Bytes.UTF8MaxLengthInBytes / sizeof(char))) : default;
             return ref this.AddEntity_INTERNAL(nameBytes, flags: flags);
 
